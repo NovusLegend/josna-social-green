@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -7,6 +6,7 @@ import { Heart, MessageCircle, Calendar } from 'lucide-react';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { formatDistanceToNow, format } from 'date-fns';
+import Comments from './Comments';
 
 interface Post {
   id: string;
@@ -34,6 +34,7 @@ const PostFeed = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const { userProfile } = useAuth();
+  const [showComments, setShowComments] = useState<string | null>(null);
 
   useEffect(() => {
     const q = query(collection(db, 'posts'), orderBy('timestamp', 'desc'));
@@ -128,6 +129,7 @@ const PostFeed = () => {
                 
                 <Button
                   variant="ghost"
+                  onClick={() => setShowComments(post.id)}
                   className="flex items-center space-x-2 text-gray-400 hover:text-blue-400"
                 >
                   <MessageCircle className="w-5 h-5" />
@@ -143,6 +145,13 @@ const PostFeed = () => {
         <div className="text-center py-12">
           <p className="text-gray-400">No posts yet. Be the first to post something!</p>
         </div>
+      )}
+      
+      {showComments && (
+        <Comments
+          postId={showComments}
+          onClose={() => setShowComments(null)}
+        />
       )}
     </div>
   );

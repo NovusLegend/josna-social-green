@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -6,9 +5,10 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Search, UserPlus, MessageCircle, Heart, Calendar } from 'lucide-react';
-import { collection, query, onSnapshot, doc, updateDoc, arrayUnion, arrayRemove, where, getDocs } from 'firebase/firestore';
+import { collection, query, onSnapshot, doc, updateDoc, arrayUnion, arrayRemove, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { formatDistanceToNow, format } from 'date-fns';
+import Comments from './Comments';
 
 interface User {
   uid: string;
@@ -40,6 +40,7 @@ const Discovery = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [filteredPosts, setFilteredPosts] = useState<Post[]>([]);
+  const [showComments, setShowComments] = useState<string | null>(null);
   const { userProfile } = useAuth();
 
   useEffect(() => {
@@ -126,6 +127,19 @@ const Discovery = () => {
     }
   };
 
+  const startChat = async (userId: string) => {
+    if (!userProfile) return;
+
+    await addDoc(collection(db, 'messages'), {
+      content: `Hi! I'd like to connect with you.`,
+      senderId: userProfile.uid,
+      receiverId: userId,
+      senderUsername: userProfile.username,
+      timestamp: serverTimestamp(),
+      participants: [userProfile.uid, userId]
+    });
+  };
+
   return (
     <div className="max-w-4xl mx-auto">
       <Card className="bg-black/80 border-green-500/30 backdrop-blur mb-6">
@@ -194,6 +208,7 @@ const Discovery = () => {
                       </Button>
                       <Button
                         variant="ghost"
+                        onClick={() => startChat(user.uid)}
                         className="text-blue-400 hover:text-blue-300"
                       >
                         <MessageCircle className="w-4 h-4" />
@@ -265,6 +280,7 @@ const Discovery = () => {
                     
                     <Button
                       variant="ghost"
+                      onClick={() => setShowComments(post.id)}
                       className="flex items-center space-x-2 text-gray-400 hover:text-blue-400"
                     >
                       <MessageCircle className="w-5 h-5" />
@@ -283,6 +299,13 @@ const Discovery = () => {
           )}
         </TabsContent>
       </Tabs>
+
+      {showComments && (
+        <Comments
+          postId={showComments}
+          onClose={() => setShowComments(null)}
+        />
+      )}
     </div>
   );
 };
