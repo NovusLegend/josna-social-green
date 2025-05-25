@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -44,15 +43,15 @@ const Messages = () => {
     const unsubscribe = onSnapshot(messagesQuery, async (snapshot) => {
       const chatMap = new Map<string, Chat>();
       
-      for (const doc of snapshot.docs) {
-        const message = { id: doc.id, ...doc.data() } as Message;
+      for (const docSnapshot of snapshot.docs) {
+        const message = { id: docSnapshot.id, ...docSnapshot.data() } as Message;
         const otherUserId = message.senderId === userProfile.uid ? message.receiverId : message.senderId;
         
         if (!chatMap.has(otherUserId)) {
           // Get other user's info
           const userDoc = await getDoc(doc(db, 'users', otherUserId));
           if (userDoc.exists()) {
-            const userData = userDoc.data();
+            const userData = userDoc.data() as { username: string };
             chatMap.set(otherUserId, {
               userId: otherUserId,
               username: userData.username,
