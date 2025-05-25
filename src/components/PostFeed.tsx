@@ -3,10 +3,10 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Heart, MessageCircle } from 'lucide-react';
+import { Heart, MessageCircle, Calendar } from 'lucide-react';
 import { collection, query, orderBy, onSnapshot, doc, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, format } from 'date-fns';
 
 interface Post {
   id: string;
@@ -16,6 +16,10 @@ interface Post {
   timestamp: any;
   likes: string[];
   comments: Comment[];
+  reminder?: {
+    date: any;
+    title: string;
+  };
 }
 
 interface Comment {
@@ -96,6 +100,19 @@ const PostFeed = () => {
             </CardHeader>
             <CardContent>
               <p className="text-white mb-4 whitespace-pre-wrap">{post.content}</p>
+              
+              {post.reminder && (
+                <div className="bg-green-900/30 border border-green-500/30 rounded-lg p-3 mb-4">
+                  <div className="flex items-center space-x-2 mb-1">
+                    <Calendar className="w-4 h-4 text-green-400" />
+                    <span className="text-green-400 font-semibold text-sm">Reminder</span>
+                  </div>
+                  <p className="text-white font-medium">{post.reminder.title}</p>
+                  <p className="text-gray-300 text-sm">
+                    {format(post.reminder.date.toDate(), 'MMMM d, yyyy')}
+                  </p>
+                </div>
+              )}
               
               <div className="flex items-center space-x-4 border-t border-gray-700 pt-3">
                 <Button

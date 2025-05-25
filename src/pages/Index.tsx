@@ -6,6 +6,7 @@ import Navigation from '@/components/Navigation';
 import PostFeed from '@/components/PostFeed';
 import Profile from '@/components/Profile';
 import Messages from '@/components/Messages';
+import Discovery from '@/components/Discovery';
 import CreatePost from '@/components/CreatePost';
 
 const Index = () => {
@@ -27,6 +28,8 @@ const Index = () => {
 
   const renderContent = () => {
     switch (activeTab) {
+      case 'discovery':
+        return <Discovery />;
       case 'profile':
         return <Profile />;
       case 'messages':

@@ -2,7 +2,7 @@
 import React from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Home, MessageCircle, User, Plus } from 'lucide-react';
+import { Home, MessageCircle, User, Plus, Search } from 'lucide-react';
 
 interface NavigationProps {
   activeTab: string;
@@ -25,6 +25,14 @@ const Navigation = ({ activeTab, setActiveTab, setShowCreatePost }: NavigationPr
             className={activeTab === 'home' ? 'bg-green-600 hover:bg-green-700' : 'text-white hover:text-green-400'}
           >
             <Home className="w-5 h-5" />
+          </Button>
+          
+          <Button
+            variant={activeTab === 'discovery' ? 'default' : 'ghost'}
+            onClick={() => setActiveTab('discovery')}
+            className={activeTab === 'discovery' ? 'bg-green-600 hover:bg-green-700' : 'text-white hover:text-green-400'}
+          >
+            <Search className="w-5 h-5" />
           </Button>
           
           <Button
