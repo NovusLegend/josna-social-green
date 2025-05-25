@@ -160,7 +160,7 @@ const Discovery = () => {
 
         <TabsContent value="users" className="space-y-4">
           {filteredUsers.map((user) => {
-            const isFollowing = user.followers?.includes(userProfile?.uid || '');
+            const isFollowing = Array.isArray(user.followers) && user.followers.includes(userProfile?.uid || '');
             
             return (
               <Card key={user.uid} className="bg-black/80 border-green-500/30 backdrop-blur">
@@ -176,7 +176,7 @@ const Discovery = () => {
                         <h3 className="text-white font-semibold">{user.username}</h3>
                         <p className="text-gray-400 text-sm">{user.bio || 'No bio yet'}</p>
                         <p className="text-gray-500 text-xs">
-                          {user.followers?.length || 0} followers • {user.postsCount || 0} posts
+                          {Array.isArray(user.followers) ? user.followers.length : 0} followers • {user.postsCount || 0} posts
                         </p>
                       </div>
                     </div>
@@ -214,9 +214,9 @@ const Discovery = () => {
 
         <TabsContent value="posts" className="space-y-4">
           {filteredPosts.map((post) => {
-            const isLiked = post.likes?.includes(userProfile?.uid || '');
-            const likesCount = post.likes?.length || 0;
-            const commentsCount = post.comments?.length || 0;
+            const isLiked = Array.isArray(post.likes) && post.likes.includes(userProfile?.uid || '');
+            const likesCount = Array.isArray(post.likes) ? post.likes.length : 0;
+            const commentsCount = Array.isArray(post.comments) ? post.comments.length : 0;
 
             return (
               <Card key={post.id} className="bg-black/80 border-green-500/30 backdrop-blur">
